@@ -37,4 +37,5 @@ br.form['Password'] = 'R!pple17'
 # Login
 br.submit()
 
-print(br.open('https://advertiser.nexxt.com/account/login?ReturnUrl=%2F').read())
+raw_data=(br.open('https://advertiser.nexxt.com/adverts/4992/summary').read())
+print type(raw_data)
