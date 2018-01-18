@@ -1,14 +1,10 @@
-import mechanize
+import mechanize,requests
 import cookielib
 from BeautifulSoup import BeautifulSoup
 import html2text
+from pandas.io.html import read_html
+from selenium import webdriver
 
-def findnth(ReqData, needle, n):
-    parts= ReqData.split(needle, n+1)
-    print parts[1]
-    if len(parts)<=n+1:
-        return -1
-    return len(ReqData)-len(parts[-1])-len(needle)
 
 def Ripple_Bayard_Clickcast(raw_data,n): #n= The number of fields
 	start_string = "Ripple - Bayard Clickcast</a></td>"
@@ -185,34 +181,47 @@ br.set_handle_referer(True)
 br.set_handle_robots(False)
 br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
 
-br.addheaders = [('User-agent', 'Chrome')]
+br.addheaders = [('User-agent', 'Firefox')]
 
 # The site we will navigate into, handling it's session
-br.open('https://advertiser.nexxt.com/')
+br.open('https://www.zipalerts.com/dashboard')
 
 # View available forms
 for f in br.forms():
     print f
 
+    
+
 # Select the second (index one) form (the first form is a search query box)
 br.select_form(nr=0)
 
 # User credentials
-br.form['UserName'] = 'kevin@ripplemedia.io'
-br.form['Password'] = 'R!pple17'
+br.form['email'] = 'kyle@ripplemedia.io'
+br.form['password'] = 'R!pple16*'
+driver = webdriver.Firefox()
+try:
 
-# Login
-br.submit()
+	# Login
+	br.submit()
+	
+except (mechanize.HTTPError,mechanize.URLError) as e:
 
-raw_data=(br.open('https://advertiser.nexxt.com/adverts/4992/summary').read())
-#print (raw_data)
-fields = 5
+	raw_data=(br.open('https://www.zipalerts.com/org/buyer#end=1517356800&start=1514764800').read())
+	driver.get('https://www.zipalerts.com/org/buyer#end=1517356800&start=1514764800')
 
+	table = driver.find_element_by_xpath('<div class="data-table">')
+	table_html = table.get_attribute('innerHTML')
+	df = read_html(table_html)[0]
+	print df
+	driver.close()
+	fields = 5
+
+"""
 Ripple_Bayard_Clickcast(raw_data,fields)
 Ripple_Bayard_Joveo_DE(raw_data,fields)
 Ripple_Clickcast_DE(raw_data,fields)
 Ripple_Clickcast_JB(raw_data,fields)
 Ripple_Joveo_DE(raw_data,fields)
-Ripple_Joveo_JB(raw_data,fields)
+Ripple_Joveo_JB(raw_data,fields)"""
 
 
